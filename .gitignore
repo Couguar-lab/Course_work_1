@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+.venv/
+logs/
+data/*.xlsx
+data/*.csv
+data/*.json
+.pytest_cache/
+.idea/
+*.log
+.env
