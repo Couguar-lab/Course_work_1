@@ -1,17 +1,22 @@
+import json
+
+import pytest
+
 from src.services import simple_search
 
 
-def test_simple_search_found(sample_transactions_list):
-    result = simple_search("Перевод", sample_transactions_list)
-    assert len(result["transactions"]) == 1
-    assert result["transactions"][0]["Описание"] == "Перевод"
-
-
-def test_simple_search_empty_string(sample_transactions_list):
-    result = simple_search("", sample_transactions_list)
-    assert len(result["transactions"]) == 2
-
-
-def test_simple_search_not_found(sample_transactions_list):
-    result = simple_search("Одежда", sample_transactions_list)
-    assert len(result["transactions"]) == 0
+@pytest.mark.parametrize(
+    "search_term, expected_len, expected_desc",
+    [
+        ("Перевод", 1, "Перевод"),
+        ("лента", 1, "Лента"),
+        ("", 2, None),
+        ("одежда", 0, None),
+    ],
+)
+def test_simple_search(sample_transactions_list, search_term, expected_len, expected_desc):
+    result_json = simple_search(search_term, sample_transactions_list)
+    result = json.loads(result_json)
+    assert len(result["transactions"]) == expected_len
+    if expected_desc is not None:
+        assert any(t["Описание"] == expected_desc for t in result["transactions"])
